@@ -1,0 +1,5 @@
+# sudata_de_challenge/requirements.txt
+psycopg2-binary
+pandas
+python-dotenv
+sqlalchemy
