@@ -1,0 +1,44 @@
+# .github/workflows/replicate_db.yml
+
+name: Daily DB Replication to Cloud
+
+on:
+  workflow_dispatch: # Permite ejecutar el workflow manualmente desde GitHub Actions UI
+  schedule:
+    # Ejecuta el workflow una vez al día a medianoche UTC
+    # (Puedes ajustar la hora si necesitas una zona horaria específica.
+    # Por ejemplo, para 05:00 AM UTC-3 (Argentina/Chile), sería '0 8 * * *' UTC)
+    - cron: '0 0 * * *'
+
+jobs:
+  replicate:
+    runs-on: ubuntu-latest # Ejecuta el trabajo en una máquina virtual de Ubuntu
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Clona el repositorio
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Replication Pipeline
+        run: python src/replication_pipeline.py # O src/replication_pipeline.py si lo tienes en subcarpeta
+        env:
+          # Carga las credenciales desde GitHub Secrets como variables de entorno
+          DB_ORIGIN_HOST: ${{ secrets.DB_ORIGIN_HOST }}
+          DB_ORIGIN_PORT: ${{ secrets.DB_ORIGIN_PORT }}
+          DB_ORIGIN_NAME: ${{ secrets.DB_ORIGIN_NAME }}
+          DB_ORIGIN_USER: ${{ secrets.DB_ORIGIN_USER }}
+          DB_ORIGIN_PASSWORD: ${{ secrets.DB_ORIGIN_PASSWORD }}
+          DB_CLOUD_HOST: ${{ secrets.DB_CLOUD_HOST }}
+          DB_CLOUD_PORT: ${{ secrets.DB_CLOUD_PORT }}
+          DB_CLOUD_NAME: ${{ secrets.DB_CLOUD_NAME }}
+          DB_CLOUD_USER: ${{ secrets.DB_CLOUD_USER }}
+          DB_CLOUD_PASSWORD: ${{ secrets.DB_CLOUD_PASSWORD }}
