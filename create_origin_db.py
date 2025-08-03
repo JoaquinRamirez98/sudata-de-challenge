@@ -1,5 +1,3 @@
-# sudata_de_challenge/create_origin_db.py (VERSION 3: AJUSTE POR NOMBRES DE COLUMNAS DE CSV)
-
 import psycopg2
 from psycopg2 import sql
 import os
@@ -55,9 +53,7 @@ def create_tables():
         conn.autocommit = True
         cur = conn.cursor()
 
-        # Definiciones de esquema de tablas (SQL DDL) - AJUSTADAS A NOMBRES DE COLUMNAS DE CSV
-        # Usamos comillas dobles para nombres de columnas con mayúsculas,
-        # para que PostgreSQL los maneje como nombres exactos (case-sensitive)
+        # Definiciones de esquema de tablas (SQL DDL)
         tables_sql = [
             """
             CREATE TABLE IF NOT EXISTS dim_date (

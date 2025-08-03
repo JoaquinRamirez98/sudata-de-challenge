@@ -1,5 +1,3 @@
-# sudata_de_challenge/load_origin_data.py (VERSION 3: AJUSTE POR NOMBRES DE COLUMNAS Y TRANSFORMACIÓN)
-
 import pandas as pd
 from sqlalchemy import create_engine
 import os
@@ -42,15 +40,15 @@ def load_data_to_origin_db():
                 # Calcular "MontoTotal" a partir de "Price_PerUnit" y "QuantitySold"
                 df["MontoTotal"] = df["Price_PerUnit"] * df["QuantitySold"]
                 print(f"Columna 'MontoTotal' calculada para {table_name}.")
-                # Asegurarse de que el Dateid sea INT, Pandas puede inferirlo como object si hay errores
+
                 df['Dateid'] = pd.to_numeric(df['Dateid'], errors='coerce').astype(int)
                 df['Productid'] = pd.to_numeric(df['Productid'], errors='coerce').astype(int)
                 df['Segmentid'] = pd.to_numeric(df['Segmentid'], errors='coerce').astype(int)
             
             elif table_name == "dim_date":
-                # Asegurarse de que la columna 'date' sea de tipo fecha
+
                 df['date'] = pd.to_datetime(df['date'], errors='coerce').dt.date
-                # Asegurarse de que las columnas numéricas sean INT
+
                 for col in ['dateid', 'Year', 'Quarter', 'Month', 'Day', 'Weekday']:
                     df[col] = pd.to_numeric(df[col], errors='coerce').astype(int)
 
@@ -72,8 +70,7 @@ def load_data_to_origin_db():
 
     except Exception as e:
         print(f"Error al cargar datos: {e}")
-        # Importante: para depuración, puedes imprimir el SQL completo que falló si el error lo provee
-        # print(f"SQL que causó el error: {e.orig.pgerror if hasattr(e.orig, 'pgerror') else 'No disponible'}")
+
     finally:
         if engine:
             engine.dispose()

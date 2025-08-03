@@ -1,5 +1,3 @@
-# sudata_de_challenge/replication_pipeline.py
-
 import pandas as pd
 from sqlalchemy import create_engine
 import os
@@ -68,7 +66,6 @@ def replicate_data():
         cloud_engine = get_db_engine("cloud")
 
         # PASO 1: BORRAR TABLAS EXISTENTES EN LA NUBE EN ORDEN DE DEPENDENCIA INVERSA
-        # Esto es crucial para la estrategia truncate-and-load con FKs
         print("\nBorrando tablas existentes en la base de datos de destino (en orden inverso de dependencia)...")
         tables_to_drop_order = [
             "fact_sales",
@@ -178,7 +175,7 @@ def replicate_data():
 
             # Cargar datos en la base de datos destino (Nube)
             print(f"Cargando {len(df)} filas en '{table_name_cloud}' (destino en la nube)...")
-            # CAMBIO CLAVE AQUÍ: if_exists='append' porque ya hicimos el DROP TABLE antes
+
             df.to_sql(table_name_cloud, cloud_engine, if_exists='append', index=False, schema='public')
             print(f"Datos de '{table_name_cloud}' cargados exitosamente en la nube.")
 
