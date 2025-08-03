@@ -1,0 +1,6 @@
+# exercise2_bcra_api/requirements.txt
+requests
+pandas
+sqlalchemy
+psycopg2-binary
+python-dotenv

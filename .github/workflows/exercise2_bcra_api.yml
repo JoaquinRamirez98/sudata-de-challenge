@@ -1,0 +1,46 @@
+# .github/workflows/exercise2_bcra_api.yml
+
+name: Weekly BCRA API Ingestion
+
+on:
+  workflow_dispatch: # Allows manual triggering from GitHub Actions UI
+  schedule:
+    # Runs every Monday at 00:00 UTC (start of the week)
+    # Adjust '0 0 * * 1' if you need a different day/time.
+    # Example: '0 0 * * SUN' for Sunday, '0 0 * * *' for daily
+    - cron: '0 0 * * 1'
+
+jobs:
+  ingest_bcra_data:
+    runs-on: ubuntu-latest # Executes on a fresh Ubuntu virtual machine
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Clones the repository
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x' # Use the latest Python 3 (or specify e.g., '3.11')
+
+      - name: Install dependencies for Exercise 2
+        run: |
+          python -m pip install --upgrade pip
+          # Install requirements specific to exercise2_bcra_api
+          pip install -r exercise2_bcra_api/requirements.txt
+
+      - name: Run BCRA API Ingestion Pipeline
+        # Adjust this path if your script is in a different location relative to repo root
+        run: python exercise2_bcra_api/src/bcra_api_pipeline.py
+        env:
+          # Load Supabase DB credentials from GitHub Secrets
+          DB_CLOUD_HOST: ${{ secrets.DB_CLOUD_HOST }}
+          DB_CLOUD_PORT: ${{ secrets.DB_CLOUD_PORT }}
+          DB_CLOUD_NAME: ${{ secrets.DB_CLOUD_NAME }}
+          DB_CLOUD_USER: ${{ secrets.DB_CLOUD_USER }}
+          DB_CLOUD_PASSWORD: ${{ secrets.DB_CLOUD_PASSWORD }}
+          # Load BCRA API credentials from GitHub Secrets
+          BCRA_API_TOKEN: ${{ secrets.BCRA_API_TOKEN }}
+          BCRA_API_BASE_URL: ${{ secrets.BCRA_API_BASE_URL }}
+          BCRA_API_ENDPOINT_V3_MONETARIAS: ${{ secrets.BCRA_API_ENDPOINT_V3_MONETARIAS }}
+          BCRA_API_ENDPOINT_V3_LIST_VARIABLES: ${{ secrets.BCRA_API_ENDPOINT_V3_LIST_VARIABLES }}
