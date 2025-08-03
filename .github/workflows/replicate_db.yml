@@ -29,7 +29,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Replication Pipeline
-        run: python src/replication_pipeline.py # O src/replication_pipeline.py si lo tienes en subcarpeta
+        run: python replication_pipeline.py # O src/replication_pipeline.py si lo tienes en subcarpeta
         env:
           # Carga las credenciales desde GitHub Secrets como variables de entorno
           DB_ORIGIN_HOST: ${{ secrets.DB_ORIGIN_HOST }}
