@@ -1,72 +1,57 @@
 # Desafío Técnico Data Engineer - Sudata
 
-Este repositorio contiene la solución al Ejercicio 1: **Replicación de Base de Datos**, parte del desafío técnico de Data Engineer para Sudata.
+Este repositorio contiene mi solución al Desafío Técnico de Data Engineer propuesto por Sudata, que abarca la construcción de pipelines de replicación, scraping y actualización de datos desde diversas fuentes hacia una base de datos en la nube.
+
+El desafío está dividido en tres ejercicios clave:
+
+1.  **Replicación de una Base de Datos Existente**
+2.  **Extracción Incremental desde la API del BCRA**
+3.  **Web Scraping de Propiedades en Venta**
 
 ---
 
-## Ejercicio 1: Replicación de Base de Datos
+## Estructura del Repositorio
 
-### Objetivo General
+├── .github/ # Workflows de GitHub Actions para automatización
+├── .env # Variables de entorno locales (credenciales, no versionado)
+├── README.md # Este archivo: Visión general del desafío
+├── exercise1_replication/ # Solución para el Ejercicio 1 (Replicación DB)
+│ ├── data/ # Archivos CSV de origen
+│ ├── src/ # Scripts Python para el pipeline
+│ ├── requirements.txt # Dependencias específicas de este ejercicio
+│ └── README.md # Documentación detallada del Ejercicio 1
+├── exercise2_bcra_api/ # Solución para el Ejercicio 2 (API BCRA)
+│ ├── src/ # Scripts Python para el pipeline
+│ ├── requirements.txt # Dependencias específicas de este ejercicio
+│ └── README.md # Documentación detallada del Ejercicio 2
+└── exercise3_web_scraping/ # Solución para el Ejercicio 3 (Web Scraping)
+├── src/ # Scripts Python para el pipeline
+├── requirements.txt # Dependencias específicas de este ejercicio
+└── README.md # Documentación detallada del Ejercicio 3
 
-Implementar un pipeline robusto para la replicación diaria de datos de ventas y productos desde una base de datos PostgreSQL de origen (simulada localmente) hacia una base de datos espejo en la nube (PostgreSQL en Supabase), con énfasis en la automatización y el modelado básico para Business Intelligence.
 
-### Tecnologías Clave Utilizadas
-
-*   **Python 3.x:** Lenguaje principal de desarrollo.
-*   **PostgreSQL:** Bases de datos de origen (local) y destino (Supabase).
-*   **Pandas & SQLAlchemy:** Librerías Python para extracción, transformación y carga de datos (ETL).
-*   **GitHub Actions:** Orquestación y automatización del pipeline.
-*   **`python-dotenv`:** Gestión segura de credenciales en entorno local.
-
-### Diseño y Ejecución del Pipeline
-
-El pipeline opera bajo una estrategia de **"truncate-and-load" (vaciar y cargar)** para asegurar una réplica completa y consistente en cada ejecución.
-
-1.  **Configuración de Origen:**
-    *   Una base de datos PostgreSQL (`sudata_origin_db`) se crea y popula localmente a partir de archivos CSV (`DimDate.csv`, `DimCustomerSegment.csv`, `DimProduct.csv`, `FactSales.csv`).
-    *   El script `create_origin_db.py` define los esquemas de tablas (`dim_date`, `dim_customer_segment`, `dim_product`, `fact_sales`), mapeando directamente a los nombres de columnas de los CSV, incluyendo la capitalización original.
-    *   El script `load_origin_data.py` carga los datos, incluyendo la **transformación** de `MontoTotal` en `fact_sales` (calculado como `Price_PerUnit * QuantitySold`).
-
-2.  **Configuración de Destino en la Nube:**
-    *   Una instancia de PostgreSQL en la nube se provisiona usando **Supabase** (plan gratuito), conectándose a través de su **Transaction Pooler** para asegurar compatibilidad con IPv4 y escalabilidad básica.
-
-3.  **Script de Replicación (`replication_pipeline.py`):**
-    *   Se conecta a ambas bases de datos utilizando credenciales gestionadas por variables de entorno (cargadas vía `.env` localmente o GitHub Secrets en producción).
-    *   **Proceso de Carga:** Primero, se borran las tablas existentes en el destino en orden inverso de dependencia (hechos, luego dimensiones) para evitar conflictos de claves foráneas. Luego, se recrean las tablas con el mismo esquema del origen y se cargan los datos extraídos y transformados.
-
-4.  **Automatización Diaria:**
-    *   El pipeline se automatiza con **GitHub Actions**. El workflow (`.github/workflows/replicate_db.yml`) está configurado para ejecutarse **una vez al día a medianoche UTC** (`cron: '0 0 * * *'`) y puede ser disparado manualmente (`workflow_dispatch`).
-    *   Las credenciales de acceso a ambas bases de datos se gestionan de forma segura mediante **GitHub Secrets**.
-
-### Esquema del Modelo de Datos para BI (Destino)
-
-El esquema de la base de datos destino (`sudata_origin_db` en Supabase) es el siguiente, replicando la estructura de las tablas de origen y ajustado para BI:
-
-*   `"dim_date"`: Contiene atributos de tiempo.
-*   `"dim_customer_segment"`: Contiene información sobre segmentos de clientes.
-*   `"dim_product"`: Contiene detalles de productos.
-*   `"fact_sales"`: Tabla de hechos de ventas, con claves foráneas a las dimensiones y la métrica calculada `"MontoTotal"`.
-
-### Acceso y Verificación
-
-Para verificar la replicación, puedes acceder a la base de datos en la nube:
-
-*   **Consola de Supabase:** [https://app.supabase.com/](https://app.supabase.com/)
-*   **Credenciales de Conexión (Transaction Pooler):**
-    *   Host: `aws-0-us-east-2.pooler.supabase.com` (o el que te corresponda)
-    *   Port: `6543`
-    *   Usuario: `postgres.rqbnmzoehqwozmxuajyb`
-    *   Nombre de la BD: `postgres`
-
-### Consideraciones Profesionales
-
-*   **Reusabilidad y Modularidad:** Código organizado para facilitar el mantenimiento y futuras extensiones.
-*   **Gestión de Credenciales:** Implementación de prácticas seguras para el manejo de credenciales (`.env` y GitHub Secrets).
-*   **Fiabilidad:** La estrategia de truncate-and-load asegura la idempotencia del pipeline.
-*   **Observabilidad:** El workflow de GitHub Actions proporciona un registro detallado de cada ejecución.
-*   **Preparación para BI:** El modelado de datos y la transformación básica de `MontoTotal` facilitan el análisis posterior.
 
 ---
 
-**Autor:** [Joaquin Ramirez] ([JoaquinRamirez98])
+## Instrucciones de Uso
+
+Cada ejercicio contiene un `README.md` específico con instrucciones detalladas para su configuración, ejecución y verificación.
+
+### Configuración General (Una Sola Vez)
+
+1.  **Clonar el Repositorio:**
+    git clone https://github.com/JoaquinRamirez98/sudata-de-challenge.git
+    cd sudata-de-challenge
+
+2.  **Crear Archivo `.env`:**
+    Crea un archivo `.env` en la raíz de este repositorio y añade todas las credenciales necesarias para los ejercicios. **Este archivo NO se sube a Git.**
+
+### Ejecutar Ejercicios Específicos
+
+Para cada ejercicio, navega a su directorio correspondiente (`exercise1_replication/`, `exercise2_bcra_api/`, etc.) y sigue las instrucciones en su `README.md` particular. Asegúrate de activar el entorno virtual específico del ejercicio antes de ejecutar sus scripts.
+
+---
+
+**Autor:** [Joaquin Ramirez]
+**Contacto:** [www.linkedin.com/in/joaquin-ramirez-systems-engineer]
 **Fecha:** [02 de Agosto de 2025]

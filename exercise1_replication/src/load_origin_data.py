@@ -11,7 +11,7 @@ DB_USER = os.getenv("DB_ORIGIN_USER")
 DB_PASSWORD = os.getenv("DB_ORIGIN_PASSWORD")
 DB_NAME = os.getenv("DB_ORIGIN_NAME")
 
-DATA_DIR = "data"
+DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
 
 # Nombres de los archivos CSV y sus correspondientes tablas
 # NOTA: EL ORDEN ES IMPORTANTE PARA LAS CLAVES FORÁNEAS
