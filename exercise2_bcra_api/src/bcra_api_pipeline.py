@@ -1,5 +1,3 @@
-# sudata-de-challenge-kpojoa/exercise2_bcra_api/src/bcra_api_pipeline.py
-
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
@@ -117,7 +115,6 @@ def fetch_bcra_dolar_data_evolution(start_date_str, end_date_str):
                 # Para USD vendedor, asumiremos que tipoPase es el valor a extraer.
                 # Si hubiera múltiples detalles, se podría filtrar por descripcion="DOLAR VENDEDOR"
                 
-                # Suponiendo que el primer detalle de USD/ARS contiene el tipoPase deseado
                 if detalles:
                     for detalle in detalles:
                         if detalle.get('codigoMoneda') == BCRA_API_COD_MONEDA: # Asegurarse de que sea la moneda correcta si hay varias
@@ -148,7 +145,7 @@ def fetch_bcra_dolar_data_evolution(start_date_str, end_date_str):
             all_df_data.append(df_chunk)
             
             # Update offset for the next request
-            if len(df_chunk) < limit_per_request: # If number of results is less than the limit, it's the last page
+            if len(df_chunk) < limit_per_request: 
                 break
             current_offset += limit_per_request
             
